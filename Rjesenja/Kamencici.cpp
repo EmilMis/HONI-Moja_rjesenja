@@ -71,7 +71,7 @@ int can_win(int board_start, int board_end, int CA_count, int CB_count, int CA_t
 
 int main(void) {
 
-	scanf_s("%d%d", &ploca_length, &limit);
+	scanf("%d%d", &ploca_length, &limit);
 	cin >> ploca;
 
 	int state = can_win(0, ploca.size() - 1, 0, 0, 1);
