@@ -1,87 +1,49 @@
 #include <iostream>
-
 using namespace std;
-
 string ploca;
-int ploca_length;
-int limit;
-
-int trans_T[351][351][351];
-
-int can_win(int board_start, int board_end, int CA_count, int CB_count, int CA_turn) {
-	if (CB_count >= limit) {
-		return 2;
+int a, b;
+int dp[355][355];
+int rek(int x, int y, int p1, int p2, char prev, int plr) {
+	if (dp[x][y] != 0) {
+		return dp[x][y] - 1;
 	}
-	if (CA_count >= limit) {
-		return 1;
-	}
-
-	if (board_start == board_end) {
-		return 1;
-	}
-
-	if (trans_T[board_start][board_end][CA_count] != 0) {
-		return trans_T[board_start][board_end][CA_count];
-	}
-	
-	int pos1, pos2;
-	
-	if (ploca[board_end] == 'C') {
-		if (CA_turn == 1) {
-			pos1 = can_win(board_start, board_end - 1, CA_count + 1, CB_count, (CA_turn + 1) % 2);
+	if (prev == 'C') {
+		if (plr == 1) {
+			p2++;
 		}
 		else {
-			pos1 = can_win(board_start, board_end - 1, CA_count, CB_count + 1, (CA_turn + 1) % 2);
+			p1++;
 		}
 	}
-	else {
-		pos1 = can_win(board_start, board_end - 1, CA_count, CB_count, (CA_turn + 1) % 2);
+	if (p1 >= b || x == y) {
+		dp[x][y] = 1;
+		return 0;
 	}
-
-	if (ploca[board_start] == 'C') {
-		if (CA_turn == 1) {
-			pos2 = can_win(board_start + 1, board_end, CA_count + 1, CB_count, (CA_turn + 1) % 2);
-		}
-		else {
-			pos2 = can_win(board_start + 1, board_end, CA_count, CB_count + 1, (CA_turn + 1) % 2);
-		}
+	if (p2 >= b) {
+		dp[x][y] = 2;
+		return 1;
 	}
-	else {
-		pos2 = can_win(board_start + 1, board_end, CA_count, CB_count, (CA_turn + 1) % 2);
+	if (rek(x + 1, y, p1, p2, ploca[x], (plr + 1) % 2) == plr) {
+		dp[x][y] = plr;
+		return plr;
 	}
-
-	if (CA_turn == 1) {
-		if (pos1 > pos2) {
-			trans_T[board_start][board_end][CA_count] = pos1;
-			return pos1;
-		}
-		trans_T[board_start][board_end][CA_count] = pos2;
-		return pos2;
+	if (rek(x, y - 1, p1, p2, ploca[y], (plr + 1) % 2) == plr) {
+		dp[x][y] = plr;
+		return plr;
 	}
-	else {
-		if (pos1 < pos2) {
-			trans_T[board_start][board_end][CA_count] = pos1;
-			return pos1;
-		}
-		trans_T[board_start][board_end][CA_count] = pos2;
-		return pos2;
-	}
-
+	dp[x][y] = (plr + 1) % 2 + 1;
+	return (plr + 1) % 2;
 }
 
 int main(void) {
-
-	scanf("%d%d", &ploca_length, &limit);
+	cin >> a >> b;
 	cin >> ploca;
-
-	int state = can_win(0, ploca.size() - 1, 0, 0, 1);
-
-	if (state == 2) {
+	int state = rek(0, a - 1, 0, 0, 'P', 1);
+	if (state) {
 		cout << "DA";
 	}
 	else {
 		cout << "NE";
 	}
-
 	return 0;
 }
